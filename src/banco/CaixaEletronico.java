@@ -22,8 +22,6 @@ public class CaixaEletronico {
 			if (cpf.equals(conta.getCpf())) {
 				existeConta = true;
 				contaCliente = conta;
-				System.out.println(conta.getAgencia() + " - " + conta.getBanco() + " - " + conta.getConta() + " - "
-						+ conta.getCpf() + " - " + conta.getValor());
 			}
 		}
 
@@ -54,7 +52,7 @@ public class CaixaEletronico {
 
 				if (contaClienteDigitada.equals(contaCliente.getConta())
 						&& agenciaClienteDigitada.equals(contaCliente.getAgencia())) {
-					System.out.println("Seja bem vindo(a) " + cliente.getNome() + "\n");
+					System.out.println("\nSeja bem vindo(a) " + cliente.getNome() + "\n");
 					System.out.println(contaCliente.getAgencia() + " - " + contaCliente.getBanco() + " - "
 							+ contaCliente.getConta() + " - " + contaCliente.getCpf() + " - " + contaCliente.getValor()
 							+ "\n");
@@ -65,8 +63,9 @@ public class CaixaEletronico {
 
 					if (opcao == 1) {
 						System.out.println("Digite o valor a ser sacado: ");
-						double valorSacado = entrada.nextDouble();
+						String valorsacado = entrada.next().replace(",", ".");
 
+						double valorSacado = Double.parseDouble(valorsacado);
 						if (valorSacado <= contaCliente.getValor()) {
 							double saqueConta = contaCliente.getValor() - valorSacado;
 
@@ -79,11 +78,12 @@ public class CaixaEletronico {
 					} else if (opcao == 2) {
 						System.out.println("Seu saldo atual é: R$ " + contaCliente.getValor());
 						System.out.println("Digite o valor a ser depositado");
-						double valorDeposito = entrada.nextDouble();
+						String valordeposito = entrada.next().replace(",", ".");
 
+						double valorDeposito = Double.parseDouble(valordeposito);
 						double somaValorDepsito = valorDeposito + contaCliente.getValor();
 
-						System.out.println("Seu saldo após o deposito é: R$ " + somaValorDepsito);
+						System.out.println("\nSeu saldo após o deposito é: R$ " + somaValorDepsito);
 					} else if (opcao == 3) {
 						System.out.println("Digite a agência: ");
 						String buscaAgencia = entrada.nextLine();
@@ -94,20 +94,48 @@ public class CaixaEletronico {
 						Conta contaSerTransferida = null;
 						for (Conta conta : contas) {
 							if (buscaAgencia.equals(conta.getAgencia()) && buscaConta.equals(conta.getConta())) {
-								contaSerTransferida = conta;
+								if (!contaCliente.equals(conta))
+									contaSerTransferida = conta;
 							}
 						}
 
-						Cliente clienteTrasferido = null;
-						for (Cliente cli : clientesDoBanco) {
-							if (cli.getCpf().equals(contaSerTransferida.getCpf())) {
-								clienteTrasferido = cli;
+						if (contaSerTransferida == null) {
+							System.out.println("Conta não encontrada ou inexistente");
+						} else {
+
+							Cliente clienteTrasferido = null;
+							for (Cliente cli : clientesDoBanco) {
+								if (cli.getCpf().equals(contaSerTransferida.getCpf())) {
+									clienteTrasferido = cli;
+								}
 							}
+
+							if (clienteTrasferido == null) {
+								System.out.println("Não foi possivel encontrar essa cliente");
+
+							} else {
+
+								System.out.println("Você deseja transferir para: " + clienteTrasferido.getNome());
+								System.out.println("Agência: " + contaSerTransferida.getAgencia() + " - Conta: "
+										+ contaSerTransferida.getConta());
+
+								System.out.println("\nSeu saldo atual é: R$ " + contaCliente.getValor());
+								System.out.println("\nDigite o valor a ser trasferido: ");
+								String valorTransferencia = entrada.next().replace(",", ".");
+
+								double valorTrasferido = Double.parseDouble(valorTransferencia);
+
+								if (valorTrasferido <= contaCliente.getValor()) {
+									double valorPosTransferencia = contaCliente.getValor() - valorTrasferido;
+									contaCliente.setValor(valorPosTransferencia);
+									System.out
+											.println("Seu saldo após a tranferência é: R$ " + contaCliente.getValor());
+								} else {
+									System.out.println("Seu saldo é insuficiente para realizar essa operação");
+								}
+							}
+
 						}
-						
-						System.out.println("Você deseja transferir para: " + clienteTrasferido.getNome());
-						System.out.println("Agência: " + contaSerTransferida.getAgencia() + " - Conta: " 
-						+ contaSerTransferida.getConta());
 					}
 
 				} else
