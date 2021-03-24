@@ -61,6 +61,7 @@ public class CaixaEletronico {
 					System.out.println(
 							"Escolha uma opção: \n 1 - Saque \n 2 - Deposito \n 3 - Transferência \nDigite o numero da opção: ");
 					int opcao = entrada.nextInt();
+					entrada.nextLine();
 
 					if (opcao == 1) {
 						System.out.println("Digite o valor a ser sacado: ");
@@ -69,7 +70,8 @@ public class CaixaEletronico {
 						if (valorSacado <= contaCliente.getValor()) {
 							double saqueConta = contaCliente.getValor() - valorSacado;
 
-							System.out.println("Você sacou: R$ " + valorSacado + "\nSeu saldo atual é: R$ " + saqueConta);
+							System.out
+									.println("Você sacou: R$ " + valorSacado + "\nSeu saldo atual é: R$ " + saqueConta);
 						} else {
 							System.out.println("Não existe saldo suficiente");
 						}
@@ -82,6 +84,30 @@ public class CaixaEletronico {
 						double somaValorDepsito = valorDeposito + contaCliente.getValor();
 
 						System.out.println("Seu saldo após o deposito é: R$ " + somaValorDepsito);
+					} else if (opcao == 3) {
+						System.out.println("Digite a agência: ");
+						String buscaAgencia = entrada.nextLine();
+
+						System.out.println("Digite a conta: ");
+						String buscaConta = entrada.nextLine();
+
+						Conta contaSerTransferida = null;
+						for (Conta conta : contas) {
+							if (buscaAgencia.equals(conta.getAgencia()) && buscaConta.equals(conta.getConta())) {
+								contaSerTransferida = conta;
+							}
+						}
+
+						Cliente clienteTrasferido = null;
+						for (Cliente cli : clientesDoBanco) {
+							if (cli.getCpf().equals(contaSerTransferida.getCpf())) {
+								clienteTrasferido = cli;
+							}
+						}
+						
+						System.out.println("Você deseja transferir para: " + clienteTrasferido.getNome());
+						System.out.println("Agência: " + contaSerTransferida.getAgencia() + " - Conta: " 
+						+ contaSerTransferida.getConta());
 					}
 
 				} else
