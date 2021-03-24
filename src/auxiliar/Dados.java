@@ -11,8 +11,8 @@ public class Dados {
 	public static List<Conta> obterContas() {
 		List<Conta> contas = new ArrayList<>();
 		
-		contas.add(new Conta("0046", "Santander", "1234-5", 260.00, "439.379.318-80"));
-		contas.add(new Conta("0001", "Nubank", "1567-0", 300.00, "437.098.318-57"));
+		contas.add(new Conta("0046", "Santander", "1234-5", 260.00, "456.789.567-90"));
+		contas.add(new Conta("0001", "Nubank", "1567-0", 300.00, "465.876.321-80"));
 		
 		return contas;
 	}
@@ -20,8 +20,8 @@ public class Dados {
 	public static List<Cliente> obterCliente(){
 		List<Cliente> clientes = new ArrayList<>();
 		
-		clientes.add(new Cliente("Carlos", "439.379.318-80", "16403-135", 53, "Junqueira"));
-		clientes.add(new Cliente("Ana Paula", "437.098.318-57", "16403-135", 53, "Junqueira"));
+		clientes.add(new Cliente("Carlos", "456.789.567-90", "14403-165", 53, "Jardim"));
+		clientes.add(new Cliente("Ana Paula", "465.876.321-80", "17893-178", 56, "Europa"));
 		
 		return clientes;
 	}
