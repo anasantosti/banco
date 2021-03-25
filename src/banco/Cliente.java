@@ -102,5 +102,10 @@ public class Cliente {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "Cliente [nome = " + nome + ", cpf = " + cpf + ", cep = " + cep + ", numero = " + numero + ", bairro = " + bairro
+				+ "]";
+	}
 	
 }

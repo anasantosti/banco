@@ -1,9 +1,9 @@
 package banco;
 
-import java.util.List;
 import java.util.Scanner;
 
-import auxiliar.Dados;
+import servicos.ClienteServico;
+import servicos.ContaServico;
 
 public class CaixaEletronico {
 
@@ -13,34 +13,17 @@ public class CaixaEletronico {
 
 		System.out.println("Digite seu CPF: ");
 		String cpf = entrada.nextLine();
-		Conta contaCliente = null;
 
-		List<Conta> contas = Dados.obterContas();
-		boolean existeConta = false;
+		Conta contaCliente = ContaServico.buscaContaPeloCpf(cpf);
 
-		for (Conta conta : contas) {
-			if (cpf.equals(conta.getCpf())) {
-				existeConta = true;
-				contaCliente = conta;
-			}
-		}
-
-		if (!existeConta)
+		if (contaCliente == null)
 			System.out.println("Não existe conta cadastrada para este CPF!");
+
 		else {
-			List<Cliente> clientesDoBanco = Dados.obterCliente();
 
-			boolean existeCliente = false;
-			Cliente cliente = null;
+			Cliente cliente = ClienteServico.buscaClientePeloCpf(cpf);
 
-			for (Cliente cli : clientesDoBanco) {
-				if (cpf.equals(cli.getCpf())) {
-					cliente = cli;
-					existeCliente = true;
-				}
-			}
-
-			if (!existeCliente) {
+			if (cliente == null) {
 				System.out.println("Cliente não encontrado para este CPF");
 			} else {
 
@@ -53,9 +36,8 @@ public class CaixaEletronico {
 				if (contaClienteDigitada.equals(contaCliente.getConta())
 						&& agenciaClienteDigitada.equals(contaCliente.getAgencia())) {
 					System.out.println("\nSeja bem vindo(a) " + cliente.getNome() + "\n");
-					System.out.println(contaCliente.getAgencia() + " - " + contaCliente.getBanco() + " - "
-							+ contaCliente.getConta() + " - " + contaCliente.getCpf() + " - " + contaCliente.getValor()
-							+ "\n");
+					System.out.println(contaCliente + "\n");
+					
 					System.out.println(
 							"Escolha uma opção: \n 1 - Saque \n 2 - Deposito \n 3 - Transferência \nDigite o numero da opção: ");
 					int opcao = entrada.nextInt();
@@ -69,8 +51,7 @@ public class CaixaEletronico {
 						if (valorSacado <= contaCliente.getValor()) {
 							double saqueConta = contaCliente.getValor() - valorSacado;
 
-							System.out
-									.println("Você sacou: R$ " + valorSacado + "\nSeu saldo atual é: R$ " + saqueConta);
+							System.out.println("Você sacou: R$ " + valorSacado + "\nSeu saldo atual é: R$ " + saqueConta);
 						} else {
 							System.out.println("Não existe saldo suficiente");
 						}
@@ -91,24 +72,13 @@ public class CaixaEletronico {
 						System.out.println("Digite a conta: ");
 						String buscaConta = entrada.nextLine();
 
-						Conta contaSerTransferida = null;
-						for (Conta conta : contas) {
-							if (buscaAgencia.equals(conta.getAgencia()) && buscaConta.equals(conta.getConta())) {
-								if (!contaCliente.equals(conta))
-									contaSerTransferida = conta;
-							}
-						}
+						Conta contaSerTransferida = ContaServico.buscaContaPelaAgenciaEConta(buscaAgencia, buscaConta);
 
-						if (contaSerTransferida == null) {
+						if (contaSerTransferida == null || contaCliente.equals(contaSerTransferida)) {
 							System.out.println("Conta não encontrada ou inexistente");
 						} else {
 
-							Cliente clienteTrasferido = null;
-							for (Cliente cli : clientesDoBanco) {
-								if (cli.getCpf().equals(contaSerTransferida.getCpf())) {
-									clienteTrasferido = cli;
-								}
-							}
+							Cliente clienteTrasferido = ClienteServico.buscaClientePeloCpf(contaSerTransferida.getCpf());
 
 							if (clienteTrasferido == null) {
 								System.out.println("Não foi possivel encontrar essa cliente");
@@ -135,8 +105,11 @@ public class CaixaEletronico {
 								}
 							}
 
-						}
+						} 
+					} else {
+						System.out.println("Opção Inválida");
 					}
+					
 
 				} else
 					System.out.println("Conta ou agência inválida");

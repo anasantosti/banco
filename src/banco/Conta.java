@@ -104,7 +104,9 @@ public class Conta {
 			return false;
 		return true;
 	}
-	
-	
-	
+
+	@Override
+	public String toString() {
+		return agencia + " - " + banco + " - " + conta + " - " + cpf + " - R$ " + valor;
+	}	
 }
