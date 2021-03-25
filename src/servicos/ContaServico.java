@@ -10,7 +10,9 @@ public class ContaServico {
 	private static List<Conta> contas = Dados.obterContas();
 	
 	public static Conta buscaContaPeloCpf(String cpf) {
-
+		if (cpf == null)
+			return null;
+		
 		for (Conta conta : contas) {
 			if (cpf.equals(conta.getCpf())) {
 				return conta;
@@ -21,7 +23,6 @@ public class ContaServico {
 	}
 	
 	public static Conta buscaContaPelaAgenciaEConta(String agencia, String conta) {
-		
 		for (Conta contaBanco : contas) {
 			if (agencia.equals(contaBanco.getAgencia()) && conta.equals(contaBanco.getConta())) {
 				return contaBanco;
