@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import servicos.ClienteServico;
 import servicos.ContaServico;
+import utils.Dialog;
 
 public class CaixaEletronico {
 
@@ -11,110 +12,121 @@ public class CaixaEletronico {
 
 		Scanner entrada = new Scanner(System.in);
 
-		System.out.println("Digite seu CPF: ");
-		String cpf = entrada.nextLine();
+		try {
 
-		Conta contaCliente = ContaServico.buscaContaPeloCpf(cpf);
+			String cpf = Dialog.obterDado("Digite seu CPF: ");
 
-		if (contaCliente == null)
-			System.out.println("Não existe conta cadastrada para este CPF!");
+			Conta contaCliente = ContaServico.buscaContaPeloCpf(cpf);
 
-		else {
+			if (contaCliente == null)
+				Dialog.mostrarMensagemErro("Não existe conta cadastrada para este CPF!");
 
-			Cliente cliente = ClienteServico.buscaClientePeloCpf(cpf);
+			else {
+				Cliente cliente = ClienteServico.buscaClientePeloCpf(cpf);
 
-			if (cliente == null) {
-				System.out.println("Cliente não encontrado para este CPF");
-			} else {
+				if (cliente == null) {
+					Dialog.mostrarMensagemErro("Cliente não encontrado para este CPF");
 
-				System.out.println("Digite sua agência: ");
-				String agenciaClienteDigitada = entrada.nextLine();
+				} else {
+					String agenciaClienteDigitada = Dialog.obterDado("Digite sua agência: ");
+					String contaClienteDigitada = Dialog.obterDado("Digite sua conta: ");
 
-				System.out.println("Digite sua conta: ");
-				String contaClienteDigitada = entrada.nextLine();
+					if (contaClienteDigitada.equals(contaCliente.getConta())
+							&& agenciaClienteDigitada.equals(contaCliente.getAgencia())) {
+						Dialog.mostrarMensagemInfo("Seja bem vindo(a) " + cliente.getNome() + "\n\nSuas informações: \n"
+								+ contaCliente.toString());
 
-				if (contaClienteDigitada.equals(contaCliente.getConta())
-						&& agenciaClienteDigitada.equals(contaCliente.getAgencia())) {
-					System.out.println("\nSeja bem vindo(a) " + cliente.getNome() + "\n");
-					System.out.println(contaCliente + "\n");
-					
-					System.out.println(
-							"Escolha uma opção: \n 1 - Saque \n 2 - Deposito \n 3 - Transferência \nDigite o numero da opção: ");
-					int opcao = entrada.nextInt();
-					entrada.nextLine();
+						int opcao = -1;
+						do {
+							String opcao1 = Dialog.obterDado(
+									"Escolha uma opção: \n 1 - Saque \n 2 - Deposito \n 3 - Transferência \nDigite o numero da opção: ");
 
-					if (opcao == 1) {
-						System.out.println("Digite o valor a ser sacado: ");
-						String valorsacado = entrada.next().replace(",", ".");
+							try {
+								opcao = Integer.parseInt(opcao1);
+							} catch (Exception e) {
+								Dialog.mostrarMensagemErro(
+										"Valor informado não é um valor numérico, favor informar um número");
+							}
+						} while (opcao == -1);
 
-						double valorSacado = Double.parseDouble(valorsacado);
-						if (valorSacado <= contaCliente.getValor()) {
-							double saqueConta = contaCliente.getValor() - valorSacado;
+						if (opcao == 1) {
+							String valorSacado1 = Dialog.obterDado("Digite o valor a ser sacado: ").replace(",", ".");
 
-							System.out.println("Você sacou: R$ " + valorSacado + "\nSeu saldo atual é: R$ " + saqueConta);
-						} else {
-							System.out.println("Não existe saldo suficiente");
-						}
+							double valorSacado = Double.parseDouble(valorSacado1);
+							if (valorSacado <= contaCliente.getValor()) {
+								double saqueConta = contaCliente.getValor() - valorSacado;
 
-					} else if (opcao == 2) {
-						System.out.println("Seu saldo atual é: R$ " + contaCliente.getValor());
-						System.out.println("Digite o valor a ser depositado");
-						String valordeposito = entrada.next().replace(",", ".");
-
-						double valorDeposito = Double.parseDouble(valordeposito);
-						double somaValorDepsito = valorDeposito + contaCliente.getValor();
-
-						System.out.println("\nSeu saldo após o deposito é: R$ " + somaValorDepsito);
-					} else if (opcao == 3) {
-						System.out.println("Digite a agência: ");
-						String buscaAgencia = entrada.nextLine();
-
-						System.out.println("Digite a conta: ");
-						String buscaConta = entrada.nextLine();
-
-						Conta contaSerTransferida = ContaServico.buscaContaPelaAgenciaEConta(buscaAgencia, buscaConta);
-
-						if (contaSerTransferida == null || contaCliente.equals(contaSerTransferida)) {
-							System.out.println("Conta não encontrada ou inexistente");
-						} else {
-
-							Cliente clienteTrasferido = ClienteServico.buscaClientePeloCpf(contaSerTransferida.getCpf());
-
-							if (clienteTrasferido == null) {
-								System.out.println("Não foi possivel encontrar essa cliente");
+								Dialog.mostrarMensagemInfo(
+										"Você sacou: R$ " + valorSacado + "\nSeu saldo atual é: R$ " + saqueConta);
 
 							} else {
+								Dialog.mostrarMensagemErro("Não existe saldo suficiente");
 
-								System.out.println("Você deseja transferir para: " + clienteTrasferido.getNome());
-								System.out.println("Agência: " + contaSerTransferida.getAgencia() + " - Conta: "
-										+ contaSerTransferida.getConta());
-
-								System.out.println("\nSeu saldo atual é: R$ " + contaCliente.getValor());
-								System.out.println("\nDigite o valor a ser trasferido: ");
-								String valorTransferencia = entrada.next().replace(",", ".");
-
-								double valorTrasferido = Double.parseDouble(valorTransferencia);
-
-								if (valorTrasferido <= contaCliente.getValor()) {
-									double valorPosTransferencia = contaCliente.getValor() - valorTrasferido;
-									contaCliente.setValor(valorPosTransferencia);
-									System.out
-											.println("Seu saldo após a tranferência é: R$ " + contaCliente.getValor());
-								} else {
-									System.out.println("Seu saldo é insuficiente para realizar essa operação");
-								}
 							}
 
-						} 
-					} else {
-						System.out.println("Opção Inválida");
-					}
-					
+						} else if (opcao == 2) {
+							Dialog.mostrarMensagemInfo("Seu saldo atual é: R$ " + contaCliente.getValor());
+							String valordeposito = Dialog.obterDado("Digite o valor a ser depositado").replace(",",
+									".");
 
-				} else
-					System.out.println("Conta ou agência inválida");
+							double valorDeposito = Double.parseDouble(valordeposito);
+							double somaValorDepsito = valorDeposito + contaCliente.getValor();
+
+							Dialog.mostrarMensagemInfo("Seu saldo após o deposito é: R$ " + somaValorDepsito);
+						} else if (opcao == 3) {
+							String buscaAgencia = Dialog.obterDado("Digite a agência: ");
+							String buscaConta = Dialog.obterDado("Digite a conta: ");
+
+							Conta contaSerTransferida = ContaServico.buscaContaPelaAgenciaEConta(buscaAgencia,
+									buscaConta);
+
+							if (contaSerTransferida == null || contaCliente.equals(contaSerTransferida)) {
+								Dialog.mostrarMensagemErro("Conta não encontrada ou inexistente");
+
+							} else {
+								Cliente clienteTrasferido = ClienteServico
+										.buscaClientePeloCpf(contaSerTransferida.getCpf());
+
+								if (clienteTrasferido == null) {
+									Dialog.mostrarMensagemErro("Não foi possivel encontrar essa cliente");
+
+								} else {
+									Dialog.mostrarMensagemInfo(
+											"Você deseja transferir para: " + clienteTrasferido.getNome()
+													+ "\nAgência: " + contaSerTransferida.getAgencia() + " - Conta: "
+													+ contaSerTransferida.getConta());
+									Dialog.mostrarMensagemInfo("Seu saldo atual é: R$ " + contaCliente.getValor());
+									String valorTransferencia = Dialog.obterDado("Digite o valor a ser trasferido: ")
+											.replace(",", ".");
+
+									double valorTrasferido = Double.parseDouble(valorTransferencia);
+
+									if (valorTrasferido <= contaCliente.getValor()) {
+										double valorPosTransferencia = contaCliente.getValor() - valorTrasferido;
+										contaCliente.setValor(valorPosTransferencia);
+										Dialog.mostrarMensagemInfo(
+												"Seu saldo após a tranferência é: R$ " + contaCliente.getValor());
+
+									} else {
+										Dialog.mostrarMensagemErro(
+												"Seu saldo é insuficiente para realizar essa operação");
+									}
+								}
+
+							}
+						} else {
+							Dialog.mostrarMensagemErro("Opção Inválida");
+						}
+
+					} else
+						Dialog.mostrarMensagemErro("Conta ou agência inválida");
+				}
+
 			}
 
+		} catch (Exception e) {
+			if(e.getMessage().equals("apertouCancelar"))
+				Dialog.mostrarMensagemInfo("Seu procedimento foi cancelado com sucesso!\nTenha um òtimo dia.");
 		}
 
 		entrada.close();
